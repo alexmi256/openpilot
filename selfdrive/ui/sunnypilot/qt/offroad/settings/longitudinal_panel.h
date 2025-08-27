@@ -43,4 +43,8 @@ private:
   DecControllerSubpanel *decScreen;
   ButtonControlSP *decManageBtn = nullptr;
   ParamControlSP *dynamicExperimentalControl = nullptr;
+
+  ParamControlSP *vibePersonalityControl;
+  ParamControlSP *vibeAccelPersonalityControl;
+  ParamControlSP *vibeFollowPersonalityControl;
 };
