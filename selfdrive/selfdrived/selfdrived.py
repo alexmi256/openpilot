@@ -45,6 +45,7 @@ ButtonType = car.CarState.ButtonEvent.Type
 SafetyModel = car.CarParams.SafetyModel
 
 IGNORED_SAFETY_MODES = (SafetyModel.silent, SafetyModel.noOutput)
+IS_LITE_DEVICE = True
 
 
 class SelfdriveD(CruiseHelper):
@@ -87,6 +88,8 @@ class SelfdriveD(CruiseHelper):
     self.car_state_sock = messaging.sub_sock('carState', timeout=20)
 
     ignore = self.sensor_packets + self.gps_packets + ['alertDebug'] + ['modelDataV2SP']
+    if IS_LITE_DEVICE:
+      ignore += ['driverCameraState', 'managerState', 'driverMonitoringState']
     if SIMULATION:
       ignore += ['driverCameraState', 'managerState']
     if REPLAY:
@@ -338,7 +341,7 @@ class SelfdriveD(CruiseHelper):
       self.events.add(EventName.processNotRunning)
     else:
       if not SIMULATION and not self.rk.lagging:
-        if not self.sm.all_alive(self.camera_packets):
+        if not self.sm.all_alive(self.camera_packets) and not IS_LITE_DEVICE:
           self.events.add(EventName.cameraMalfunction)
         elif not self.sm.all_freq_ok(self.camera_packets):
           self.events.add(EventName.cameraFrameRate)
@@ -361,11 +364,11 @@ class SelfdriveD(CruiseHelper):
     has_disable_events = self.events.contains(ET.NO_ENTRY) and (self.events.contains(ET.SOFT_DISABLE) or self.events.contains(ET.IMMEDIATE_DISABLE))
     no_system_errors = (not has_disable_events) or (len(self.events) == num_events)
     if not self.sm.all_checks() and no_system_errors:
-      if not self.sm.all_alive():
+      if not self.sm.all_alive() and not IS_LITE_DEVICE:
         self.events.add(EventName.commIssue)
-      elif not self.sm.all_freq_ok():
+      elif not self.sm.all_freq_ok() and not IS_LITE_DEVICE:
         self.events.add(EventName.commIssueAvgFreq)
-      else:
+      elif not IS_LITE_DEVICE:
         self.events.add(EventName.commIssue)
 
       logs = {
