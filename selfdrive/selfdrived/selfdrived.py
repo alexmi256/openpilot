@@ -304,6 +304,11 @@ class SelfdriveD(CruiseHelper):
     elif lane_turn_direction == custom.TurnDirection.turnRight:
       self.events_sp.add(custom.OnroadEventSP.EventName.laneTurnRight)
 
+    greenLightAlert = self.sm['longitudinalPlanSP'].e2eAlerts.greenLightAlert
+    leadDepartAlert = self.sm['longitudinalPlanSP'].e2eAlerts.leadDepartAlert
+    if greenLightAlert or leadDepartAlert:
+      self.events_sp.add(custom.OnroadEventSP.EventName.e2eChime)
+
     for i, pandaState in enumerate(self.sm['pandaStates']):
       # All pandas must match the list of safetyConfigs, and if outside this list, must be silent or noOutput
       if i < len(self.CP.safetyConfigs):

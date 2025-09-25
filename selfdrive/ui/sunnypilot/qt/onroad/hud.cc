@@ -103,6 +103,9 @@ void HudRendererSP::updateState(const UIState &s) {
   smartCruiseControlVisionActive = lp_sp.getSmartCruiseControl().getVision().getActive();
   smartCruiseControlMapEnabled = lp_sp.getSmartCruiseControl().getMap().getEnabled();
   smartCruiseControlMapActive = lp_sp.getSmartCruiseControl().getMap().getActive();
+
+  greenLightAlert = lp_sp.getE2eAlerts().getGreenLightAlert();
+  leadDepartAlert = lp_sp.getE2eAlerts().getLeadDepartAlert();
 }
 
 void HudRendererSP::draw(QPainter &p, const QRect &surface_rect) {
@@ -177,6 +180,10 @@ void HudRendererSP::draw(QPainter &p, const QRect &surface_rect) {
 
     // Road Name
     drawRoadName(p, surface_rect);
+
+    if (greenLightAlert or leadDepartAlert) {
+      //TODO-SP: UI Visuals
+    }
   }
 }
 
